@@ -1,17 +1,16 @@
 """Correct spellings"""
-import time
-
-from spellchecker import SpellChecker
-from albertv0 import *
 
 from os import path
+
+import hunspell
+from albertv0 import *
 
 __iid__ = "PythonInterface/v0.1"
 __prettyname__ = "Spell"
 __version__ = "0.1"
 __trigger__ = "spell "
 __author__ = "Bharat Kalluri"
-__dependencies__ = ['requests']
+__dependencies__ = ['hunspell']
 
 icon_path = "{}/icons/{}.png".format(path.dirname(__file__), "correction")
 
@@ -19,8 +18,6 @@ icon_path = "{}/icons/{}.png".format(path.dirname(__file__), "correction")
 def handleQuery(query):
     if query.isTriggered:
         if not query.isValid:
-            # Avoid rate limiting
-            time.sleep(1)
             return
 
         if query.string.strip():
@@ -36,8 +33,8 @@ def handleQuery(query):
 
 
 def parse_input(word):
-    spell = SpellChecker()
-    response = spell.candidates(word)
+    spellchecker = hunspell.HunSpell('/usr/share/hunspell/en_US.dic', '/usr/share/hunspell/en_US.aff')
+    response = spellchecker.suggest(word)
     results = []
     if len(response) > 0:
         for replacements in response:
